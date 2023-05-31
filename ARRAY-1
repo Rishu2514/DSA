@@ -4,20 +4,53 @@ You can return the answer in any order.
 **Example:**
 Input: nums = [2,7,11,15], target = 9
 Output0 [0,1]
-**Explanation:** Because nums[0] + nums[1] == 9, we return [0, 1][
+**Explanation:** Because nums[0] + nums[1] == 9, we return [0, 1]
 
+A-1-
+def twoSum(nums, target):
+    num_map = {}  # Hashmap to store complements and indices
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in num_map:
+            return [num_map[complement], i]
+        num_map[num] = i
+    return []  # No solution found
+
+# Example usage
+nums = [2, 7, 11, 15]
+target = 9
+result = twoSum(nums, target)
+print(result)  # Output: [0, 1]
 
 
 
 Q-2-Given an integer array nums and an integer val, remove all occurrences of val in nums in-place. The order of the elements may be 
 changed. Then return the number of elements in nums which are not equal to val.
 Consider the number of elements in nums which are not equal to val be k, to get accepted, you need to do the following things:
-- Change the array nums such that the first k elements of nums contain the elements which are not equal to val. The remaining elements of nums are not important as well as the size of nums.
-- Return k.
+- Change the array nums such that the first k elements of nums contain the elements which are not equal to val. The remaining elements
+of nums are not important as well as the size of nums.- Return k.
 **Example :**
 Input: nums = [3,2,2,3], val = 3
 Output: 2, nums = [2,2,_*,_*]
-**Explanation:** Your function should return k = 2, with the first two elements of nums being 2. It does not matter what you leave beyond the returned k (hence they are underscores)[
+**Explanation:** Your function should return k = 2, with the first two elements of nums being 2. It does not matter what you leave
+beyond the returned k (hence they are underscores)
+A-2-
+def removeElement(nums, val):
+    i = 0  # Pointer for elements not equal to val
+
+    for j in range(len(nums)):
+        if nums[j] != val:
+            nums[i] = nums[j]
+            i += 1
+
+    return i
+
+# Example usage
+nums = [3, 2, 2, 3]
+val = 3
+k = removeElement(nums, val)
+print(k)  # Output: 2
+print(nums[:k])  # Output: [2, 2]
 
 
 
@@ -27,6 +60,31 @@ You must write an algorithm with O(log n) runtime complexity.
 **Example 1:**
 Input: nums = [1,3,5,6], target = 5
 Output: 2
+A-3-
+def searchInsert(nums, target):
+    start = 0
+    end = len(nums) - 1
+
+    while start <= end:
+        mid = (start + end) // 2
+
+        if target == nums[mid]:
+            return mid
+        elif target < nums[mid]:
+            end = mid - 1
+        else:
+            start = mid + 1
+
+    return start
+
+# Example usage
+nums = [1, 3, 5, 6]
+target = 5
+index = searchInsert(nums, target)
+print(index)  # Output: 2
+
+
+
 
 
 Q-4-You are given a large integer represented as an integer array digits, where each digits[i] is the ith digit of the integer. 
@@ -39,6 +97,27 @@ Output: [1,2,4]
 **Explanation:** The array represents the integer 123.
 Incrementing by one gives 123 + 1 = 124.
 Thus, the result should be [1,2,4].
+A-4-
+def plusOne(digits):
+    carry = 1
+    n = len(digits)
+
+    for i in range(n - 1, -1, -1):
+        digits[i] += carry
+        carry = digits[i] // 10
+        digits[i] %= 10
+
+    if carry == 1:
+        digits.insert(0, 1)
+
+    return digits
+
+# Example usage
+digits = [1, 2, 3]
+result = plusOne(digits)
+print(result)  # Output: [1, 2, 4]
+
+
 
 
 Q-5-You are given two integer arrays nums1 and nums2, sorted in non-decreasing order, and two integers m and n, representing the 
@@ -52,18 +131,92 @@ Input: nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3
 Output: [1,2,2,3,5,6]
 **Explanation:** The arrays we are merging are [1,2,3] and [2,5,6].
 The result of the merge is [1,2,2,3,5,6] with the underlined elements coming from nums1.
+A-5-
+def merge(nums1, m, nums2, n):
+    p1 = m - 1
+    p2 = n - 1
+    p = m + n - 1
+
+    while p2 >= 0:
+        if p1 >= 0 and nums1[p1] > nums2[p2]:
+            nums1[p] = nums1[p1]
+            p1 -= 1
+        else:
+            nums1[p] = nums2[p2]
+            p2 -= 1
+        p -= 1
+
+    # Copy remaining elements from nums2 to nums1
+    nums1[:p2 + 1] = nums2[:p2 + 1]
+
+    return nums1
+
+# Example usage
+nums1 = [1, 2, 3, 0, 0, 0]
+m = 3
+nums2 = [2, 5, 6]
+n = 3
+
+result = merge(nums1, m, nums2, n)
+print(result)  # Output: [1, 2, 2, 3, 5, 6]
+
+
+
+
+
+
 
 Q-6-Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is 
 distinct.
 **Example 1:**
 Input: nums = [1,2,3,1]
 Output: true
+A-6-
+def containsDuplicate(nums):
+    num_set = set()
+
+    for num in nums:
+        if num in num_set:
+            return True
+        num_set.add(num)
+
+    return False
+
+# Example usage
+nums = [1, 2, 3, 1]
+result = containsDuplicate(nums)
+print(result)  # Output: True
+
+
+
 
 Q-7-Given an integer array nums, move all 0's to the end of it while maintaining the relative order of the nonzero elements.
 Note that you must do this in-place without making a copy of the array.
 **Example 1:**
 Input: nums = [0,1,0,3,12]
 Output: [1,3,12,0,0]
+A-7-
+def moveZeroes(nums):
+    i = 0
+
+    for j in range(len(nums)):
+        if nums[j] != 0:
+            nums[i], nums[j] = nums[j], nums[i]
+            i += 1
+
+    # Fill remaining elements with zeros
+    while i < len(nums):
+        nums[i] = 0
+        i += 1
+
+    return nums
+
+# Example usage
+nums = [0, 1, 0, 3, 12]
+result = moveZeroes(nums)
+print(result)  # Output: [1, 3, 12, 0, 0]
+
+
 
 
 Q-8-You have a set of integers s, which originally contains all the numbers from 1 to n. Unfortunately, due to some error, one of the 
@@ -73,6 +226,28 @@ Find the number that occurs twice and the number that is missing and return them
 **Example 1:**
 Input: nums = [1,2,2,4]
 Output: [2,3]
+A-8-
+def findErrorNums(nums):
+    num_set = set()
+    duplicate = -1
+
+    for num in nums:
+        if num in num_set:
+            duplicate = num
+        num_set.add(num)
+
+    missing = -1
+    for i in range(1, len(nums) + 1):
+        if i not in num_set:
+            missing = i
+            break
+
+    return [duplicate, missing]
+
+# Example usage
+nums = [1, 2, 2, 4]
+result = findErrorNums(nums)
+print(result)  # Output: [2, 3]
 
 
 
