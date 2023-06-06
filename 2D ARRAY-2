@@ -3,6 +3,23 @@ Q-1-A permutation perm of n + 1 integers of all the integers in the range [0, n]
 - s[i] == 'D' if perm[i] > perm[i + 1].
 Given a string s, reconstruct the permutation perm and return it. If there are multiple valid permutations perm, return **any of them*
 A-1-
+def findPermutation(s):
+    n = len(s)
+    perm = []
+    start, end = 0, n
+
+    for c in s:
+        if c == 'I':
+            perm.append(start)
+            start += 1
+        elif c == 'D':
+            perm.append(end)
+            end -= 1
+    
+    perm.append(start)  # or perm.append(end)
+
+    return perm
+
 
 
 Q-2-You are given an m x n integer matrix matrix with the following two properties:
@@ -11,6 +28,27 @@ Q-2-You are given an m x n integer matrix matrix with the following two properti
 Given an integer target, return true *if* target *is in* matrix *or* false *otherwise*.
 You must write a solution in O(log(m * n)) time complexity.
 A-2-
+def searchMatrix(matrix, target):
+    rows = len(matrix)
+    cols = len(matrix[0])
+
+    left = 0
+    right = rows * cols - 1
+
+    while left <= right:
+        mid = (left + right) // 2
+        row = mid // cols
+        col = mid % cols
+
+        if matrix[row][col] == target:
+            return True
+        elif matrix[row][col] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+
+    return False
+
 
 
 
@@ -22,11 +60,47 @@ Recall that arr is a mountain array if and only if:
     - arr[0] < arr[1] < ... < arr[i - 1] < arr[i]
     - arr[i] > arr[i + 1] > ... > arr[arr.length - 1]
 A-3-
+def validMountainArray(arr):
+    n = len(arr)
+    if n < 3:
+        return False
+
+    i = 0
+    # Ascending phase
+    while i < n - 1 and arr[i] < arr[i + 1]:
+        i += 1
+
+    # Check if peak is reached
+    if i == 0 or i == n - 1:
+        return False
+
+    # Descending phase
+    while i < n - 1 and arr[i] > arr[i + 1]:
+        i += 1
+
+    return i == n - 1
+
 
 
 
 Q-4-Given a binary array nums, return the maximum length of a contiguous subarray with an equal number of 0 and 1.
 A-4-
+def findMaxLength(nums):
+    max_length = 0
+    count = 0
+    count_dict = {0: -1}
+
+    for i, num in enumerate(nums):
+        count += 1 if num == 1 else -1
+
+        if count in count_dict:
+            length = i - count_dict[count]
+            max_length = max(max_length, length)
+        else:
+            count_dict[count] = i
+
+    return max_length
+
 
 
 
@@ -37,6 +111,18 @@ Q-5-The **product sum** of two equal-length arrays a and b is equal to the sum o
 Given two arrays nums1 and nums2 of length n, return *the **minimum product sum** if you are allowed to **rearrange** the **order** of
 the elements in* nums1.
 A-5-
+def minProductSum(nums1, nums2):
+    nums1.sort()
+    nums2.sort()
+
+    n = len(nums1)
+    min_product_sum = 0
+
+    for i in range(n):
+        min_product_sum += nums1[i] * nums2[n - 1 - i]
+
+    return min_product_sum
+
 
 
 
@@ -46,12 +132,71 @@ original, and then randomly **shuffling** the resulting array.
 Given an array changed, return original *if* changed *is a **doubled** array. If* changed *is not a **doubled** array, return an empty
 array. The elements in* original *may be returned in **any** order*.
 A-6-
+from collections import defaultdict
+
+def findOriginalArray(changed):
+    if len(changed) % 2 != 0:
+        return []  # changed has odd length, so it can't be a doubled array
+
+    count_dict = defaultdict(int)  # dictionary to store the count of each element in changed
+
+    for num in changed:
+        count_dict[num] += 1
+
+    original = []
+
+    for num in changed:
+        if count_dict[num] == 0:
+            continue
+
+        if count_dict[2 * num] == 0:
+            return []  # changed is not a doubled array
+
+        original.append(num)
+        count_dict[num] -= 1
+        count_dict[2 * num] -= 1
+
+    return original
+
 
 
 
 
 Q-7-Given a positive integer n, generate an n x n matrix filled with elements from 1 to n2 in spiral order.
 A-7-
+def generateMatrix(n):
+    matrix = [[0] * n for _ in range(n)]
+    num = 1
+    row_start, row_end = 0, n - 1
+    col_start, col_end = 0, n - 1
+
+    while num <= n * n:
+        # Fill top row
+        for j in range(col_start, col_end + 1):
+            matrix[row_start][j] = num
+            num += 1
+        row_start += 1
+
+        # Fill right column
+        for i in range(row_start, row_end + 1):
+            matrix[i][col_end] = num
+            num += 1
+        col_end -= 1
+
+        # Fill bottom row
+        for j in range(col_end, col_start - 1, -1):
+            matrix[row_end][j] = num
+            num += 1
+        row_end -= 1
+
+        # Fill left column
+        for i in range(row_end, row_start - 1, -1):
+            matrix[i][col_start] = num
+            num += 1
+        col_start += 1
+
+    return matrix
+
 
 
 
@@ -59,7 +204,25 @@ A-7-
 
 Q-8-Given two sparse matrices mat1 of size m x k and mat2 of size k x n, return the result of mat1 x mat2. You may assume that 
 multiplication is always possible.
-A-8-
+A-8-def multiply(mat1, mat2):
+    m, k, n = len(mat1), len(mat1[0]), len(mat2[0])
+    result = [[0] * n for _ in range(m)]
+
+    sparse_mat1 = {}
+    for i in range(m):
+        for j in range(k):
+            if mat1[i][j] != 0:
+                sparse_mat1[(i, j)] = mat1[i][j]
+
+    for j in range(n):
+        for i in range(k):
+            if mat2[i][j] != 0:
+                for row, col in sparse_mat1:
+                    if col == i:
+                        result[row][j] += mat2[i][j] * sparse_mat1[(row, col)]
+
+    return result
+
 
 
 
