@@ -1,0 +1,234 @@
+Q-1-Given two strings s and t, *determine if they are isomorphic*.
+Two strings s and t are isomorphic if the characters in s can be replaced to get t.
+All occurrences of a character must be replaced with another character while preserving the order of characters. No two characters 
+may map to the same character, but a character may map to itself.
+**Example 1:**
+**Input:** s = "egg", t = "add"
+**Output:** true
+A-1-
+def isIsomorphic(s, t):
+    if len(s) != len(t):
+        return False
+
+    s_to_t = {}
+    t_to_s = {}
+
+    for c1, c2 in zip(s, t):
+        if c1 not in s_to_t and c2 not in t_to_s:
+            s_to_t[c1] = c2
+            t_to_s[c2] = c1
+        elif s_to_t.get(c1) != c2 or t_to_s.get(c2) != c1:
+            return False
+
+    return True
+
+
+Q-2-Given a string num which represents an integer, return true *if* num *is a **strobogrammatic number***.
+A **strobogrammatic number** is a number that looks the same when rotated 180 degrees (looked at upside down).
+**Example 1:**
+**Input:** num = "69"
+**Output:**
+true
+A-2-def isStrobogrammatic(num):
+    strobogrammatic_pairs = {'0': '0', '1': '1', '6': '9', '8': '8', '9': '6'}
+    left, right = 0, len(num) - 1
+
+    while left <= right:
+        if num[left] not in strobogrammatic_pairs or num[right] != strobogrammatic_pairs[num[left]]:
+            return False
+        left += 1
+        right -= 1
+
+    return True
+
+
+
+Q-3-Given two non-negative integers, num1 and num2 represented as string, return *the sum of* num1 *and* num2 *as a string*.
+You must solve the problem without using any built-in library for handling large integers (such as BigInteger). You must also not 
+convert the inputs to integers directly.
+**Example 1:**
+**Input:** num1 = "11", num2 = "123"
+**Output:**
+"134"
+A-3-
+def addStrings(num1, num2):
+    p1 = len(num1) - 1
+    p2 = len(num2) - 1
+    carry = 0
+    result = ''
+
+    while p1 >= 0 or p2 >= 0:
+        digit1 = int(num1[p1]) if p1 >= 0 else 0
+        digit2 = int(num2[p2]) if p2 >= 0 else 0
+
+        sum_digits = digit1 + digit2 + carry
+        carry = sum_digits // 10
+        result = str(sum_digits % 10) + result
+
+        p1 -= 1
+        p2 -= 1
+
+    if carry > 0:
+        result = str(carry) + result
+
+    return result
+
+
+
+
+Q-4-Given a string s, reverse the order of characters in each word within a sentence while still preserving whitespace and initial 
+word order.
+**Example 1:**
+**Input:** s = "Let's take LeetCode contest"
+**Output:** "s'teL ekat edoCteeL tsetnoc"
+A-4-
+def reverseWords(s):
+    words = s.split()
+    reversed_words = [word[::-1] for word in words]
+    reversed_sentence = ' '.join(reversed_words)
+    return reversed_sentence
+s = "Let's take LeetCode contest"
+reversed_sentence = reverseWords(s)
+print(reversed_sentence)
+
+
+
+
+Q-5-Given a string s and an integer k, reverse the first k characters for every 2k characters counting from the start of the string.
+If there are fewer than k characters left, reverse all of them. If there are less than 2k but greater than or equal to k characters,
+then reverse the first k characters and leave the other as original.
+**Example 1:**
+**Input:** s = "abcdefg", k = 2
+**Output:**
+"bacdfeg"
+A-5-
+def reverseStr(s, k):
+    s = list(s)  # Convert string to a list of characters
+    n = len(s)
+    for i in range(0, n, 2 * k):
+        s[i:i + k] = reversed(s[i:i + k])
+    return ''.join(s)
+s = "abcdefg"
+k = 2
+reversed_str = reverseStr(s, k)
+print(reversed_str)
+
+
+
+Q-6-Given two strings s and goal, return true *if and only if* s *can become* goal *after some number of **shifts** on* s.
+A **shift** on s consists of moving the leftmost character of s to the rightmost position.
+- For example, if s = "abcde", then it will be "bcdea" after one shift.
+**Example 1:**
+**Input:** s = "abcde", goal = "cdeab"
+**Output:**
+true
+A-6-
+def rotateString(s, goal):
+    s_concat = s + s
+    return goal in s_concat
+s = "abcde"
+goal = "cdeab"
+result = rotateString(s, goal)
+print(result)
+
+
+
+
+Q-7-Given two strings s and t, return true *if they are equal when both are typed into empty text editors*. '#' means a backspace
+character.
+Note that after backspacing an empty text, the text will continue empty.
+**Example 1:**
+**Input:** s = "ab#c", t = "ad#c"
+**Output:** true
+**Explanation:**
+Both s and t become "ac".
+A-7-
+def backspaceCompare(s, t):
+    stack_s = []
+    stack_t = []
+
+    for c in s:
+        if c != '#':
+            stack_s.append(c)
+        elif stack_s:
+            stack_s.pop()
+
+    for c in t:
+        if c != '#':
+            stack_t.append(c)
+        elif stack_t:
+            stack_t.pop()
+
+    return stack_s == stack_t
+s = "ab#c"
+t = "ad#c"
+result = backspaceCompare(s, t)
+print(result)
+
+
+
+
+Q-8-You are given an array coordinates, coordinates[i] = [x, y], where [x, y] represents the coordinate of a point. Check if these 
+points make a straight line in the XY plane.
+A-8-
+def checkStraightLine(coordinates):
+    if len(coordinates) <= 2:
+        return True
+
+    x1, y1 = coordinates[0]
+    x2, y2 = coordinates[1]
+    initial_slope = (y2 - y1) / (x2 - x1)
+
+    for i in range(2, len(coordinates)):
+        x, y = coordinates[i]
+        curr_slope = (y - y1) / (x - x1)
+        if curr_slope != initial_slope:
+            return False
+
+    return True
+coordinates = [[1, 1], [2, 2], [3, 3], [4, 4]]
+result = checkStraightLine(coordinates)
+print(result)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
