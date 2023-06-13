@@ -1,0 +1,209 @@
+Q-1-Given an integer `n`, return *`true` if it is a power of three. Otherwise, return `false`*.
+An integer `n` is a power of three, if there exists an integer `x` such that `n == 3x`.
+A-1-
+import math
+
+def isPowerOfThree(n):
+    if n <= 0:
+        return False
+    
+    x = math.log10(n) / math.log10(3)
+    return x == int(x)
+print(isPowerOfThree(9))   # Output: True (3^2 = 9)
+print(isPowerOfThree(27))  # Output: True (3^3 = 27)
+print(isPowerOfThree(45))  # Output: False
+print(isPowerOfThree(0))   # Output: False
+print(isPowerOfThree(-9))  # Output: False
+
+
+
+
+Q-2-You have a list `arr` of all integers in the range `[1, n]` sorted in a strictly increasing order. Apply the following algorithm
+on `arr`:
+- Starting from left to right, remove the first number and every other number afterward until you reach the end of the list.
+- Repeat the previous step again, but this time from right to left, remove the rightmost number and every other number from the 
+remaining numbers.
+- Keep repeating the steps again, alternating left to right and right to left, until a single number remains.
+Given the integer `n`, return *the last number that remains in* `arr`.
+A-2-
+def lastRemaining(n):
+    arr = list(range(1, n + 1))
+    step = 2
+    remaining = 0
+    
+    while len(arr) > 1:
+        left_to_right = True
+        for i in range(len(arr) - 1, -1, -step):
+            if left_to_right:
+                del arr[i]
+            left_to_right = not left_to_right
+        
+        step *= 2
+        remaining = arr[0]
+        
+        if len(arr) > 1:
+            arr = arr[::-1]  # Reverse the list
+        else:
+            break
+    
+    return remaining
+print(lastRemaining(9))  # Output: 6
+
+
+
+
+Q-3-Given a set represented as a string, write a recursive code to print all subsets of it. The subsets can be printed in any order.
+**Example 1:**
+Input :  set = “abc”
+Output : { “”, “a”, “b”, “c”, “ab”, “ac”, “bc”, “abc”}
+**Example 2:**
+Input : set = “abcd”
+Output : { “”, “a” ,”ab” ,”abc” ,”abcd”, “abd” ,”ac” ,”acd”, “ad” ,”b”, “bc” ,”bcd” ,”bd” ,”c” ,”cd” ,”d” }
+A-3-
+def printSubsets(s, curr_subset, index):
+    if index == len(s):
+        print(''.join(curr_subset))
+        return
+    
+    # Include the current character
+    printSubsets(s, curr_subset + [s[index]], index + 1)
+    
+    # Exclude the current character
+    printSubsets(s, curr_subset, index + 1)
+
+def generateSubsets(s):
+    printSubsets(s, [], 0)
+print("Example 1:")
+generateSubsets("abc")
+
+print("\nExample 2:")
+generateSubsets("abcd")
+
+
+
+
+
+
+Q-4-Given a string calculate length of the string using recursion.
+A-4-
+def calculateLength(s):
+    if s == "":
+        return 0
+    else:
+        return 1 + calculateLength(s[1:])
+
+s = "Hello, World!"
+print(calculateLength(s))  # Output: 13
+
+
+
+
+
+
+
+Q-5-We are given a string S, we need to find count of all contiguous substrings starting and ending with same character.
+A-5-
+def countSubstrings(S):
+    count = 0
+
+    for i in range(len(S)):
+        for j in range(i, len(S)):
+            if S[i] == S[j]:
+                count += 1
+
+    return count
+S = "abcab"
+print(countSubstrings(S))  # Output: 7
+
+
+
+
+
+Q-6-The tower of Hanoi is a famous puzzle where we have three rods and N disks. The objective of the puzzle is to move the entire 
+stack to another rod. You are given the number of discs N. Initially, these discs are in the rod 1. You need to print all the steps
+of discs movement so that all the discs reach the 3rd rod. Also, you need to find the total moves.Note: The discs are arranged such
+that the top disc is numbered 1 and the bottom-most disc is numbered N. Also, all the discs have different sizes and a bigger disc 
+cannot be put on the top of a smaller disc. Refer the provided link to get a better clarity about the puzzle.
+A-6-
+def towerOfHanoi(n, source, destination, auxiliary):
+    if n == 1:
+        print(f"Move disk 1 from rod {source} to rod {destination}")
+        return 1
+
+    count = 0
+    count += towerOfHanoi(n-1, source, auxiliary, destination)
+    print(f"Move disk {n} from rod {source} to rod {destination}")
+    count += 1
+    count += towerOfHanoi(n-1, auxiliary, destination, source)
+    
+    return count
+
+# Test the function
+N = 3
+total_moves = towerOfHanoi(N, 1, 3, 2)
+print(f"Total moves: {total_moves}")
+
+
+
+
+
+
+
+Q-7-Given a string str, the task is to print all the permutations of str. A permutation is an arrangement of all or part of a set of
+objects, with regard to the order of the arrangement. For instance, the words ‘bat’ and ‘tab’ represents two distinct permutation 
+(or arrangements) of a similar three letter word.
+A-7-
+def permutations(str):
+    if len(str) == 1:
+        print(str)
+    else:
+        for i in range(len(str)):
+            c = str[i]
+            new_str = str[:i] + str[i+1:]
+            perms = permutations(new_str)
+            for perm in perms:
+                print(c + perm)
+
+# Test the function
+str = "abc"
+permutations(str)
+
+
+
+
+
+Q-8-Given a string, count total number of consonants in it. A consonant is an English alphabet character that is not vowel 
+(a, e, i, o and u). Examples of constants are b, c, d, f, and g.
+A-8-
+def countConsonants(string):
+    consonants = "bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ"
+    count = 0
+
+    for ch in string:
+        if ch in consonants:
+            count += 1
+
+    return count
+
+# Test the function
+string = "Hello, World!"
+consonant_count = countConsonants(string)
+print(f"Total consonants: {consonant_count}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
