@@ -1,0 +1,383 @@
+Q-1-Given a linked list of **N** nodes such that it may contain a loop.
+A loop here means that the last node of the link list is connected to the node at position X(1-based index). If the link list does not
+have any loop, X=0.
+Remove the loop from the linked list, if it is present, i.e. unlink the last node which is forming the loop.
+A-1-
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+
+def detectAndRemoveLoop(head):
+    if not head or not head.next:
+        return head
+
+    slow = head
+    fast = head
+
+    # Detect loop using Floyd's Cycle-Finding Algorithm
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow == fast:
+            break
+
+    # No loop found, return the original linked list
+    if slow != fast:
+        return head
+
+    # Reset fast pointer to the head and move both pointers one step at a time
+    fast = head
+    while slow.next != fast.next:
+        slow = slow.next
+        fast = fast.next
+
+    # Remove the loop by setting the next pointer of the node just before the meeting point to None
+    slow.next = None
+
+    return head
+
+
+
+
+
+
+
+
+Q-2-A number N is represented in Linked List such that each digit corresponds to a node in linked list. You need to add 1 to it.
+A-2-
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+
+def reverseLinkedList(head):
+    prev = None
+    current = head
+
+    while current:
+        next_node = current.next
+        current.next = prev
+        prev = current
+        current = next_node
+
+    return prev
+
+def addOne(head):
+    if not head:
+        return head
+
+    reversed_head = reverseLinkedList(head)
+    current = reversed_head
+    carry = 1
+
+    while current:
+        sum = current.value + carry
+        current.value = sum % 10
+        carry = sum // 10
+
+        if carry == 0:
+            break
+
+        current = current.next
+
+    if carry == 1:
+        new_node = Node(carry)
+        current.next = new_node
+
+    return reverseLinkedList(reversed_head)
+
+
+
+
+
+
+
+
+Q-3-Given a Linked List of size N, where every node represents a sub-linked-list and contains two pointers:(i) a next pointer to the
+next node,(ii) a bottom pointer to a linked list where this node is head.Each of the sub-linked-list is in sorted order.Flatten the 
+Link List such that all the nodes appear in a single level while maintaining the sorted order. Note: The flattened list will be
+printed using the bottom pointer instead of next pointer.
+A-3-
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+        self.bottom = None
+
+def mergeLists(a, b):
+    if not a:
+        return b
+    if not b:
+        return a
+
+    result = None
+
+    if a.value <= b.value:
+        result = a
+        result.bottom = mergeLists(a.bottom, b)
+    else:
+        result = b
+        result.bottom = mergeLists(a, b.bottom)
+
+    result.next = None
+    return result
+
+def flattenLinkedList(head):
+    if not head or not head.next:
+        return head
+
+    head.next = flattenLinkedList(head.next)
+
+    head = mergeLists(head, head.next)
+
+    return head
+
+
+
+
+
+
+
+
+
+Q-4-You are given a special linked list with **N** nodes where each node has a next pointer pointing to its next node. You are also 
+given **M** random pointers, where you will be given **M** number of pairs denoting two nodes **a** and **b**  **i.e. a->arb =
+b** (arb is pointer to random node)**.**
+Construct a copy of the given list. The copy should consist of exactly **N** new nodes, where each new node has its value set to the
+value of its corresponding original node. Both the next and random pointer of the new nodes should point to new nodes in the copied 
+list such that the pointers in the original list and copied list represent the same list state. None of the pointers in the new list 
+should point to nodes in the original list.
+For example, if there are two nodes **X** and **Y** in the original list, where **X.arb** **-->** **Y**, then for the corresponding 
+two nodes **x** and **y** in the copied list, **x.arb --> y.**
+Return the head of the copied linked list.
+Note :- The diagram isn't part of any example, it just depicts an example of how the linked list may look like.
+A-4-
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+        self.random = None
+
+def copyRandomList(head):
+    if not head:
+        return None
+
+    # Step 1: Create new nodes and store mapping in a hash table
+    mapping = {}
+    current = head
+    while current:
+        new_node = Node(current.value)
+        mapping[current] = new_node
+        current = current.next
+
+    # Step 2: Update next and random pointers of new nodes
+    current = head
+    while current:
+        new_node = mapping[current]
+        new_node.next = mapping.get(current.next)
+        new_node.random = mapping.get(current.random)
+        current = current.next
+
+    return mapping[head]
+
+
+
+
+
+
+
+
+
+
+
+Q-5-Given the `head` of a singly linked list, group all the nodes with odd indices together followed by the nodes with even indices,
+and return *the reordered list*.
+The **first** node is considered **odd**, and the **second** node is **even**, and so on.
+Note that the relative order inside both the even and odd groups should remain as it was in the input.
+You must solve the problem in `O(1)` extra space complexity and `O(n)` time complexity.
+A-5-
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+
+def reorderOddEven(head):
+    if not head or not head.next:
+        return head
+
+    odd_head = head
+    even_head = head.next
+    odd = odd_head
+    even = even_head
+
+    while even and even.next:
+        odd.next = even.next
+        odd = odd.next
+        even.next = odd.next
+        even = even.next
+
+    odd.next = even_head
+
+    return odd_head
+
+
+
+
+
+
+
+
+
+Q-6-Given a singly linked list of size N. The task is to left-shift the linked list by k nodes, where k is a given positive integer
+smaller than or equal to length of the linked list.
+A-6-
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+
+def leftShiftLinkedList(head, k):
+    if not head or k == 0:
+        return head
+
+    # Find the kth node from the beginning
+    current = head
+    for _ in range(k - 1):
+        current = current.next
+
+    # If current is None, k is greater than or equal to the length of the list
+    if not current:
+        return head
+
+    # Find the last node
+    last_node = current
+    while last_node.next:
+        last_node = last_node.next
+
+    # Shift the list
+    new_head = current.next
+    current.next = None
+    last_node.next = head
+
+    return new_head
+
+
+
+
+
+
+
+
+
+
+
+Q-7-You are given the `head` of a linked list with `n` nodes.
+For each node in the list, find the value of the **next greater node**. That is, for each node, find the value of the first node that
+is next to it and has a **strictly larger** value than it.
+Return an integer array `answer` where `answer[i]` is the value of the next greater node of the `ith` node (**1-indexed**). If the 
+`ith` node does not have a next greater node, set `answer[i] = 0`.
+A-7-
+class ListNode:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+
+def nextGreaterNode(head):
+    if not head:
+        return []
+
+    values = []
+    current = head
+    while current:
+        values.append(current.value)
+        current = current.next
+
+    result = [0] * len(values)
+    stack = []
+
+    for i in range(len(values) - 1, -1, -1):
+        while stack and values[i] >= stack[-1]:
+            stack.pop()
+
+        if stack:
+            result[i] = stack[-1]
+
+        stack.append(values[i])
+
+    return result
+
+
+
+
+
+
+
+
+
+
+
+Q-8-Given the `head` of a linked list, we repeatedly delete consecutive sequences of nodes that sum to `0` until there are no such 
+sequences.
+After doing so, return the head of the final linked list.  You may return any such answer.
+(Note that in the examples below, all sequences are serializations of `ListNode` objects.)
+A-8-
+class ListNode:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
+
+def removeZeroSumSublists(head):
+    dummy = ListNode(0)
+    dummy.next = head
+
+    sum_dict = {}
+    current_sum = 0
+    current = dummy
+
+    while current:
+        current_sum += current.value
+
+        if current_sum in sum_dict:
+            prev = sum_dict[current_sum].next
+            remove_sum = current_sum + prev.value
+            while remove_sum != current_sum:
+                del sum_dict[remove_sum]
+                prev = prev.next
+                remove_sum += prev.value
+            prev.next = current.next
+
+        else:
+            sum_dict[current_sum] = current
+
+        current = current.next
+
+    return dummy.next
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
