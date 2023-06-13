@@ -9,7 +9,16 @@ Output: true
 **Example 3:**
 Input: n = 3 
 Output: false
+A-1-
+def isPowerOfTwo(n):
+    if n <= 0:
+        return False
 
+    return n & (n - 1) == 0
+print(isPowerOfTwo(1))  # Output: True
+print(isPowerOfTwo(16))  # Output: True
+print(isPowerOfTwo(3))  # Output: False
+print(isPowerOfTwo(0))  # Output: False
 
 
 
@@ -21,6 +30,12 @@ Output: 6
 **Example 2:**
 Input  : 5 
 Output : 15
+A-2-
+def sumOfFirstNNumbers(n):
+    return (n * (n + 1)) // 2
+n = 10
+sum_of_numbers = sumOfFirstNNumbers(n)
+print(sum_of_numbers)  # Output: 55
 
 
 
@@ -34,6 +49,15 @@ Output: 120
 **Example 2:**
 Input: N = 4
 Output: 24
+A-3-
+def factorial(N):
+    if N == 0:
+        return 1
+    else:
+        return N * factorial(N-1)
+N = 5
+fact = factorial(N)
+print(fact)  # Output: 120
 
 
 
@@ -44,7 +68,16 @@ Output: 25
 **Example 2 :**
 Input: N = 2, P = 5
 Output: 32
-
+A-4-
+def calculateExponent(N, P):
+    result = 1
+    for _ in range(P):
+        result *= N
+    return result
+N = 2
+P = 3
+result = calculateExponent(N, P)
+print(result)  # Output: 8
 
 
 
@@ -59,6 +92,15 @@ Output: 8
 **Example 2:**
 Input: arr = {1, 4, 45, 6, 10, -8};
 Output: 45
+A-5-
+def findMax(arr, index):
+    if index == len(arr) - 1:
+        return arr[index]
+    else:
+        return max(arr[index], findMax(arr, index + 1))
+arr = [10, 5, 8, 15, 3]
+max_element = findMax(arr, 0)
+print(max_element)  # Output: 15
 
 
 
@@ -72,6 +114,15 @@ The 5th term of the series is : 6
 Input : a = 5 d = 2 N = 10
 Output : 23
 The 10th term of the series is : 23
+A-6-
+def findNthTerm(a, d, N):
+    Nth_term = a + (N - 1) * d
+    return Nth_term
+a = 2  # First term
+d = 3  # Common difference
+N = 5  # Value of N
+Nth_term = findNthTerm(a, d, N)
+print(Nth_term)  # Output: 14
 
 
 
@@ -87,6 +138,24 @@ Q-7-Given a string S, the task is to write a program to print all permutations o
 *S = “XY”*
 ***Output:***
 *“XY”, “YX”*
+A-7-
+def permute(s, left, right):
+    if left == right:
+        print("".join(s))
+    else:
+        for i in range(left, right + 1):
+            s[left], s[i] = s[i], s[left]  # Swap characters
+            permute(s, left + 1, right)  # Recursively generate permutations
+            s[left], s[i] = s[i], s[left]  # Revert the swap
+
+def printPermutations(string):
+    n = len(string)
+    s = list(string)  # Convert string to a list of characters
+    permute(s, 0, n - 1)
+
+# Test the function
+string = "abc"
+printPermutations(string)
 
 
 
@@ -99,6 +168,17 @@ Output : 120
 **Example 2:**
 Input  : arr[] = {1, 6, 3}
 Output : 18
+A-8-
+def productOfArray(arr):
+    product = 1
+    for num in arr:
+        product *= num
+    return product
+
+# Test the function
+array = [2, 3, 4, 5]
+result = productOfArray(array)
+print(result)  # Output: 120
 
 
 
