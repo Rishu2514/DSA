@@ -1,0 +1,319 @@
+Q-1-You are given a binary tree. The binary tree is represented using the TreeNode class. Each TreeNode has an integer value and left and
+right children, represented using the TreeNode class itself. Convert this binary tree into a binary search tree.
+Input:
+        10
+
+       /   \
+
+     2      7
+
+   /   \
+
+ 8      4
+Output:
+        8
+
+      /   \
+
+    4     10
+
+  /   \
+
+2      7
+A-1-
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def inOrderTraversal(node, values):
+    if node is None:
+        return []
+
+    inOrderTraversal(node.left, values)
+    values.append(node.val)
+    inOrderTraversal(node.right, values)
+
+def convertToBST(root):
+    values = []
+    inOrderTraversal(root, values)
+    values.sort()
+
+    def updateNodeValues(node):
+        nonlocal values
+        if node is None:
+            return
+
+        updateNodeValues(node.left)
+        node.val = values.pop(0)
+        updateNodeValues(node.right)
+
+    updateNodeValues(root)
+
+# Example usage
+# Create the binary tree
+root = TreeNode(10)
+root.left = TreeNode(2)
+root.right = TreeNode(7)
+root.left.left = TreeNode(8)
+root.left.right = TreeNode(4)
+
+# Convert the binary tree to a binary search tree
+convertToBST(root)
+
+# Print the binary search tree
+# You can perform an in-order traversal to verify the sorted order
+print(root.val)
+print(root.left.val, root.right.val)
+print(root.left.left.val, root.left.right.val)
+
+
+
+
+
+
+
+
+Q-2-Given a Binary Search Tree with all unique values and two keys. Find the distance between two nodes in BST. The given keys always 
+exist in BST.
+Example:
+**Input-1:**
+n = 9
+values = [8, 3, 1, 6, 4, 7, 10, 14,13]
+node-1 = 6
+node-2 = 14
+**Output-1:**
+The distance between the two keys = 4
+**Input-2:**
+n = 9
+values = [8, 3, 1, 6, 4, 7, 10, 14,13]
+node-1 = 3
+node-2 = 4
+**Output-2:**
+The distance between the two keys = 2
+A-2-
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def findLCA(root, node1, node2):
+    if root is None:
+        return None
+
+    if root.val > node1 and root.val > node2:
+        return findLCA(root.left, node1, node2)
+
+    if root.val < node1 and root.val < node2:
+        return findLCA(root.right, node1, node2)
+
+    return root
+
+def findDistance(root, node1, node2):
+    def findLevel(node, value, level):
+        if node is None:
+            return -1
+
+        if node.val == value:
+            return level
+
+        if node.val > value:
+            return findLevel(node.left, value, level + 1)
+        else:
+            return findLevel(node.right, value, level + 1)
+
+    lca = findLCA(root, node1, node2)
+    distance1 = findLevel(lca, node1, 0)
+    distance2 = findLevel(lca, node2, 0)
+
+    return distance1 + distance2
+
+# Example usage
+# Create the BST
+root = TreeNode(8)
+root.left = TreeNode(3)
+root.right = TreeNode(10)
+root.left.left = TreeNode(1)
+root.left.right = TreeNode(6)
+root.left.right.left = TreeNode(4)
+root.left.right.right = TreeNode(7)
+root.right.right = TreeNode(14)
+root.right.right.left = TreeNode(13)
+
+# Find the distance between two nodes
+node1 = 6
+node2 = 14
+distance = findDistance(root, node1, node2)
+
+print("The distance between the two keys =", distance)
+
+
+
+
+
+
+Q-3-Write a program to convert a binary tree to a doubly linked list.
+Input:
+        10
+
+       /   \
+
+     5     20
+
+           /   \
+
+        30     35
+Output:
+5 10 30 20 35
+A-3-
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def treeToDoublyList(root):
+    if root is None:
+        return None
+
+    def inOrderTraversal(node):
+        nonlocal prev, head
+
+        if node is None:
+            return
+
+        inOrderTraversal(node.left)
+
+        if prev is None:
+            head = node
+        else:
+            prev.right = node
+            node.left = prev
+
+        prev = node
+
+        inOrderTraversal(node.right)
+
+    prev = None
+    head = None
+    inOrderTraversal(root)
+
+    head.left = prev
+    prev.right = head
+
+    return head
+
+# Example usage
+# Create the binary tree
+root = TreeNode(10)
+root.left = TreeNode(5)
+root.right = TreeNode(20)
+root.right.left = TreeNode(30)
+root.right.right = TreeNode(35)
+
+# Convert the binary tree to a doubly linked list
+head = treeToDoublyList(root)
+
+# Traverse the doubly linked list
+current = head
+while current is not None:
+    print(current.val, end=" ")
+    current = current.right
+
+
+
+
+
+
+
+Q-4-Write a program to connect nodes at the same level.
+Input:
+        1
+
+      /   \
+
+    2      3
+
+  /   \   /   \
+
+4     5 6    7
+Output:
+1 → -1
+2 → 3
+3 → -1
+4 → 5
+5 → 6
+6 → 7
+7 → -1
+A-4-
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None, next=None):
+        self.val = val
+        self.left = left
+        self.right = right
+        self.next = next
+
+def connectNodes(root):
+    if root is None:
+        return None
+
+    queue = [root]
+
+    while queue:
+        size = len(queue)
+
+        for i in range(size):
+            node = queue.pop(0)
+
+            if i < size - 1:
+                node.next = queue[0]
+
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+
+    return root
+
+# Example usage
+# Create the binary tree
+root = TreeNode(1)
+root.left = TreeNode(2)
+root.right = TreeNode(3)
+root.left.left = TreeNode(4)
+root.left.right = TreeNode(5)
+root.right.left = TreeNode(6)
+root.right.right = TreeNode(7)
+
+# Connect nodes at the same level
+connectNodes(root)
+
+# Traverse the tree and print the connections
+current = root
+while current is not None:
+    node = current
+    while node is not None:
+        print(node.val, end=" ")
+        node = node.next
+    print("-1")
+    current = current.left
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
