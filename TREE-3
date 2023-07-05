@@ -1,0 +1,243 @@
+Q-1-Given a Binary Tree (Bt), convert it to a Doubly Linked List(DLL). The left and right pointers in nodes are to be used as previous
+and next pointers respectively in converted DLL. The order of nodes in DLL must be the same as in Inorder for the given Binary Tree. 
+The first node of Inorder traversal (leftmost node in BT) must be the head node of the DLL.
+A-1-
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None, prev=None, next=None):
+        self.val = val
+        self.left = left
+        self.right = right
+        self.prev = prev
+        self.next = next
+
+def treeToDLL(root):
+    if root is None:
+        return None
+
+    def inOrderTraversal(node):
+        nonlocal prev, head
+
+        if node is None:
+            return
+
+        inOrderTraversal(node.left)
+
+        if prev is None:
+            head = node
+        else:
+            prev.right = node
+            node.left = prev
+
+        prev = node
+
+        inOrderTraversal(node.right)
+
+    prev = None
+    head = None
+    inOrderTraversal(root)
+
+    head.prev = None
+    prev.right = None
+
+    return head
+
+# Example usage
+# Create the binary tree
+root = TreeNode(10)
+root.left = TreeNode(5)
+root.right = TreeNode(20)
+root.right.left = TreeNode(15)
+root.right.right = TreeNode(30)
+
+# Convert the binary tree to a doubly linked list
+head = treeToDLL(root)
+
+# Traverse the doubly linked list
+current = head
+while current is not None:
+    print(current.val, end=" ")
+    current = current.right
+
+
+
+
+
+
+
+
+Q-2-A Given a binary tree, the task is to flip the binary tree towards the right direction that is clockwise. See the below examples 
+to see the transformation.
+In the flip operation, the leftmost node becomes the root of the flipped tree and its parent becomes its right child and the right
+sibling becomes its left child and the same should be done for all left most nodes recursively.
+A-2-
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def flipBinaryTree(root):
+    if root is None or (root.left is None and root.right is None):
+        return root
+
+    flippedLeft = flipBinaryTree(root.left)
+    flippedRight = flipBinaryTree(root.right)
+
+    root.left = flippedRight
+    root.right = flippedLeft
+
+    return root
+
+# Example usage
+# Create the binary tree
+root = TreeNode(1)
+root.left = TreeNode(2)
+root.right = TreeNode(3)
+root.left.left = TreeNode(4)
+root.left.right = TreeNode(5)
+
+# Flip the binary tree
+flippedRoot = flipBinaryTree(root)
+
+# Traverse the flipped binary tree
+def traverseBinaryTree(node):
+    if node is None:
+        return
+
+    print(node.val, end=" ")
+    traverseBinaryTree(node.left)
+    traverseBinaryTree(node.right)
+
+traverseBinaryTree(flippedRoot)
+
+
+
+
+
+Q-3-Given a binary tree, print all its root-to-leaf paths without using recursion. For example, consider the following Binary Tree.
+Input:
+        6
+     /    \
+    3      5
+  /   \     \
+ 2     5     4
+     /   \
+    7     4
+Output:
+There are 4 leaves, hence 4 root to leaf paths -
+  6->3->2
+  6->3->5->7
+  6->3->5->4
+  6->5>4
+A-3-
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def printRootToLeafPaths(root):
+    if root is None:
+        return
+
+    stack = [(root, [str(root.val)])]
+
+    while stack:
+        node, path = stack.pop()
+
+        if node.left is None and node.right is None:
+            print("->".join(path))
+        
+        if node.right:
+            stack.append((node.right, path + [str(node.right.val)]))
+        
+        if node.left:
+            stack.append((node.left, path + [str(node.left.val)]))
+
+# Example usage
+# Create the binary tree
+root = TreeNode(6)
+root.left = TreeNode(3)
+root.right = TreeNode(5)
+root.left.left = TreeNode(2)
+root.left.right = TreeNode(5)
+root.right.right = TreeNode(4)
+root.left.right.left = TreeNode(7)
+root.left.right.right = TreeNode(4)
+
+# Print all root-to-leaf paths
+printRootToLeafPaths(root)
+
+
+
+
+
+
+
+
+Q-4-Given Preorder, Inorder and Postorder traversals of some tree. Write a program to check if they all are of the same tree.
+**Examples:**
+Input : 
+        Inorder -> 4 2 5 1 3
+        Preorder -> 1 2 4 5 3
+        Postorder -> 4 5 2 3 1
+Output : 
+Yes
+Explanation : 
+All of the above three traversals are of
+the same tree 
+                           1
+                         /   \
+                        2     3
+                      /   \
+                     4     5
+Input : 
+        Inorder -> 4 2 5 1 3
+        Preorder -> 1 5 4 2 3
+        Postorder -> 4 1 2 3 5
+Output : 
+No
+A-4-
+def isSameTree(inorder, preorder, postorder):
+    if not inorder:
+        return len(preorder) == 0 and len(postorder) == 0
+
+    root_val = preorder[0]
+    root_index = inorder.index(root_val)
+
+    left_inorder = inorder[:root_index]
+    right_inorder = inorder[root_index+1:]
+
+    left_preorder = preorder[1:1+len(left_inorder)]
+    right_preorder = preorder[1+len(left_inorder):]
+
+    left_postorder = postorder[:len(left_inorder)]
+    right_postorder = postorder[len(left_inorder):-1]
+
+    return (isSameTree(left_inorder, left_preorder, left_postorder) and
+            isSameTree(right_inorder, right_preorder, right_postorder))
+
+# Example usage
+inorder = [4, 2, 5, 1, 3]
+preorder = [1, 2, 4, 5, 3]
+postorder = [4, 5, 2, 3, 1]
+
+if isSameTree(inorder, preorder, postorder):
+    print("Yes")
+else:
+    print("No")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
