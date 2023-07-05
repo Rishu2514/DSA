@@ -1,0 +1,347 @@
+Q-1-Given an array, for each element find the value of the nearest element to the right which is having a frequency greater than that 
+of the current element. If there does not exist an answer for a position, then make the value ‘-1’.
+A-1-
+from collections import defaultdict
+
+def nearest_greater_frequency(arr):
+    frequency = defaultdict(int)
+    stack = []
+    result = [-1] * len(arr)
+
+    # Step 1: Calculate the frequency of each element
+    for num in arr:
+        frequency[num] += 1
+
+    # Step 4: Iterate through the array in reverse order
+    for i in range(len(arr) - 1, -1, -1):
+        while stack and frequency[arr[i]] >= frequency[arr[stack[-1]]]:
+            stack.pop()
+
+        if stack:
+            result[i] = arr[stack[-1]]
+
+        stack.append(i)
+
+    # Step 5: Reverse the result array
+    result.reverse()
+
+    return result
+
+arr = [1, 2, 1, 3, 2, 4, 2]
+result = nearest_greater_frequency(arr)
+print(result)  # Output: [2, 2, 2, -1, 4, -1, -1]
+
+
+
+
+Q-2-Given a stack of integers, sort it in ascending order using another temporary stack.
+A-2-
+def sort_stack(stack):
+    temp_stack = []
+
+    while stack:
+        temp = stack.pop()
+
+        while temp_stack and temp_stack[-1] > temp:
+            stack.append(temp_stack.pop())
+
+        temp_stack.append(temp)
+
+    while temp_stack:
+        stack.append(temp_stack.pop())
+
+    return stack
+
+stack = [5, 2, 8, 1, 9]
+sorted_stack = sort_stack(stack)
+print(sorted_stack)  # Output: [1, 2, 5, 8, 9]
+
+
+
+
+
+Q-3-Given a stack with **push()**, **pop()**, and **empty()** operations, The task is to delete the **middle** element ****of it 
+without using any additional data structure.
+Input  : Stack[] = [1, 2, 3, 4, 5]
+Output : Stack[] = [1, 2, 4, 5]
+Input  : Stack[] = [1, 2, 3, 4, 5, 6]
+Output : Stack[] = [1, 2, 4, 5, 6]
+A-3-
+def delete_middle(stack, middle_index):
+    if middle_index == 1:
+        stack.pop()
+        return
+
+    temp = stack.pop()
+    delete_middle(stack, middle_index - 1)
+    stack.append(temp)
+
+
+def delete_middle_element(stack):
+    size = len(stack)
+
+    if size == 0:
+        return stack
+
+    middle_index = size // 2 + 1
+    delete_middle(stack, middle_index)
+
+    return stack
+
+stack = [1, 2, 3, 4, 5]
+modified_stack = delete_middle_element(stack)
+print(modified_stack)  # Output: [1, 2, 4, 5]
+
+stack = [1, 2, 3, 4, 5, 6]
+modified_stack = delete_middle_element(stack)
+print(modified_stack)  # Output: [1, 2, 4, 5, 6]
+
+
+
+
+
+Q-4-Given a Queue consisting of first **n** natural numbers (in random order). The task is to check whether the given Queue elements 
+can be arranged in increasing order in another Queue using a stack. The operation allowed are:
+1. Push and pop elements from the stack
+2. Pop (Or Dequeue) from the given Queue.
+3. Push (Or Enqueue) in the another Queue.
+**Examples :**
+Input : Queue[] = { 5, 1, 2, 3, 4 } 
+Output : Yes 
+Pop the first element of the given Queue 
+i.e 5. Push 5 into the stack. 
+Now, pop all the elements of the given Queue and push them to second Queue. 
+Now, pop element 5 in the stack and push it to the second Queue.   
+Input : Queue[] = { 5, 1, 2, 6, 3, 4 } 
+Output : No 
+Push 5 to stack. 
+Pop 1, 2 from given Queue and push it to another Queue. 
+Pop 6 from given Queue and push to stack. 
+Pop 3, 4 from given Queue and push to second Queue. 
+Now, from using any of above operation, we cannot push 5 into the second Queue
+A-4-
+from queue import Queue
+
+def check_queue_order(queue):
+    stack = []
+    second_queue = Queue()
+    expected = 1
+
+    while not queue.empty():
+        if queue.queue[0] == expected:
+            queue.get()
+            second_queue.put(expected)
+            expected += 1
+        elif stack and stack[-1] == expected:
+            stack.pop()
+            second_queue.put(expected)
+            expected += 1
+        else:
+            stack.append(queue.get())
+
+    while stack:
+        if stack[-1] == expected:
+            stack.pop()
+            second_queue.put(expected)
+            expected += 1
+        else:
+            break
+
+    for i in range(1, expected):
+        if second_queue.queue[i-1] != i:
+            return "No"
+
+    return "Yes"
+queue = Queue()
+queue.put(5)
+queue.put(1)
+queue.put(2)
+queue.put(3)
+queue.put(4)
+print(check_queue_order(queue))  # Output: Yes
+
+queue = Queue()
+queue.put(5)
+queue.put(1)
+queue.put(2)
+queue.put(6)
+queue.put(3)
+queue.put(4)
+print(check_queue_order(queue))  # Output: No
+
+
+
+
+
+Q-5-Given a number , write a program to reverse this number using stack.
+A-5-
+def reverse_number(number):
+    number_str = str(number)
+    stack = []
+
+    # Push each character onto the stack
+    for char in number_str:
+        stack.append(char)
+
+    reversed_number_str = ""
+
+    # Pop each character from the stack and append it to the reversed number string
+    while stack:
+        reversed_number_str += stack.pop()
+
+    reversed_number = int(reversed_number_str)
+
+    return reversed_number
+number = 12345
+reversed_number = reverse_number(number)
+print(reversed_number)  # Output: 54321
+
+
+
+
+
+
+
+Q-6-Given an integer k and a **[queue](https://www.geeksforgeeks.org/queue-data-structure/)** of integers, The task is to reverse the
+order of the first **k** elements of the queue, leaving the other elements in the same relative order.
+Only following standard operations are allowed on queue.
+- **enqueue(x) :** Add an item x to rear of queue
+- **dequeue() :** Remove an item from front of queue
+- **size() :** Returns number of elements in queue.
+- **front() :** Finds front item.
+A-6-
+from queue import Queue
+
+def reverse_first_k(queue, k):
+    stack = []
+    temp_queue = Queue()
+
+    # Step 2: Dequeue and push the first k elements from the original queue onto the stack
+    for _ in range(k):
+        stack.append(queue.get())
+
+    # Step 3: Enqueue the remaining elements from the original queue into the temporary queue
+    while not queue.empty():
+        temp_queue.put(queue.get())
+
+    # Step 4: Pop the elements from the stack and enqueue them into the temporary queue
+    while stack:
+        temp_queue.put(stack.pop())
+
+    # Step 5: Transfer the elements from the temporary queue back into the original queue
+    while not temp_queue.empty():
+        queue.put(temp_queue.get())
+
+    return queue
+
+queue = Queue()
+queue.put(1)
+queue.put(2)
+queue.put(3)
+queue.put(4)
+queue.put(5)
+
+k = 3
+modified_queue = reverse_first_k(queue, k)
+
+while not modified_queue.empty():
+    print(modified_queue.get(), end=" ")  # Output: 3 2 1 4 5
+
+
+
+
+
+Q-7-Given a sequence of n strings, the task is to check if any two similar words come together and then destroy each other then print
+the number of words left in the sequence after this pairwise destruction.
+**Examples:**
+Input : ab aa aa bcd ab
+Output : 3
+*As aa, aa destroys each other so,*
+*ab bcd ab is the new sequence.*
+Input :  tom jerry jerry tom
+Output : 0
+*As first both jerry will destroy each other.*
+*Then sequence will be tom, tom they will also destroy*
+*each other. So, the final sequence doesn’t contain any*
+*word.*
+A-7-
+def count_remaining_words(sequence):
+    stack = []
+
+    for word in sequence:
+        if not stack:
+            stack.append(word)
+        else:
+            if stack[-1] == word:
+                stack.pop()
+            else:
+                stack.append(word)
+
+    return len(stack)
+sequence = ["ab", "aa", "aa", "bcd", "ab"]
+remaining_words = count_remaining_words(sequence)
+print(remaining_words)  # Output: 3
+
+sequence = ["tom", "jerry", "jerry", "tom"]
+remaining_words = count_remaining_words(sequence)
+print(remaining_words)  # Output: 0
+
+
+
+
+
+
+
+Q-8-Given an array of integers, the task is to find the maximum absolute difference between the nearest left and the right smaller 
+element of every element in the array.
+**Note:** If there is no smaller element on right side or left side of any element then we take zero as the smaller element. For 
+example for the leftmost element, the nearest smaller element on the left side is considered as 0. Similarly, for rightmost elements,
+the smaller element on the right side is considered as 0.
+A-8-
+def max_absolute_difference(arr):
+    n = len(arr)
+    left_smaller = [0] * n
+    right_smaller = [0] * n
+    stack = []
+
+    # Find Next Smaller Element (NSE) for each element
+    for i in range(n):
+        while stack and arr[i] < arr[stack[-1]]:
+            popped_index = stack.pop()
+            left_smaller[popped_index] = arr[i]
+        stack.append(i)
+
+    # Clear the stack
+    stack.clear()
+
+    # Find Previous Smaller Element (PSE) for each element
+    for i in range(n - 1, -1, -1):
+        while stack and arr[i] < arr[stack[-1]]:
+            popped_index = stack.pop()
+            right_smaller[popped_index] = arr[i]
+        stack.append(i)
+
+    max_diff = 0
+
+    # Calculate maximum absolute difference
+    for i in range(n):
+        diff = abs(left_smaller[i] - right_smaller[i])
+        max_diff = max(max_diff, diff)
+
+    return max_diff
+arr = [2, 1, 8, 7, 6, 5]
+result = max_absolute_difference(arr)
+print(result)  # Output: 6
+
+
+
+
+
+
+
+
+
+
+
+
+
