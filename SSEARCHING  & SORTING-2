@@ -1,0 +1,312 @@
+Q-1-**Merge k Sorted Lists**
+You are given an array of `k` linked-lists `lists`, each linked-list is sorted in ascending order.
+*Merge all the linked-lists into one sorted linked-list and return it.*
+**Constraints:**
+- `k == lists.length`
+- `0 <= k <= 10000`
+- `0 <= lists[i].length <= 500`
+- `-10000 <= lists[i][j] <= 10000`
+- `lists[i]` is sorted in **ascending order**.
+- The sum of `lists[i].length` will not exceed `10000`.
+A-1-
+import heapq
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def mergeKLists(lists):
+    min_heap = []
+    dummy = ListNode()
+    merged = dummy
+
+    # Push first element from each linked list into min-heap
+    for node in lists:
+        if node:
+            heapq.heappush(min_heap, (node.val, node))
+
+    while min_heap:
+        _, node = heapq.heappop(min_heap)
+        merged.next = node
+        merged = merged.next
+
+        if node.next:
+            heapq.heappush(min_heap, (node.next.val, node.next))
+
+    return dummy.next
+
+
+
+
+
+Q-2-**Count of Smaller Numbers After Self**
+Given an integer array `nums`, return *an integer array* `counts` *where* `counts[i]` *is the number of smaller elements to the right
+of* `nums[i]`.
+**Constraints:**
+- `1 <= nums.length <= 100000`
+- `-10000 <= nums[i] <= 10000`
+A-2-
+def countSmaller(nums):
+    def mergeSort(nums):
+        if len(nums) <= 1:
+            return nums, [0]
+
+        mid = len(nums) // 2
+        left, left_counts = mergeSort(nums[:mid])
+        right, right_counts = mergeSort(nums[mid:])
+
+        merged = []
+        counts = [0] * len(nums)
+        i, j = 0, 0
+
+        while i < len(left) and j < len(right):
+            if left[i] <= right[j]:
+                merged.append(left[i])
+                counts[i + j] += j
+                i += 1
+            else:
+                merged.append(right[j])
+                j += 1
+
+        while i < len(left):
+            merged.append(left[i])
+            counts[i + j] += j
+            i += 1
+
+        while j < len(right):
+            merged.append(right[j])
+            j += 1
+
+        return merged, counts + right_counts
+
+    _, counts = mergeSort(nums)
+    return counts
+
+
+
+
+
+Q-3-**Sort an Array**
+Given an array of integers `nums`, sort the array in ascending order and return it.
+You must solve the problem **without using any built-in** functions in `O(nlog(n))` time complexity and with the smallest space 
+complexity possible.
+**Constraints:**
+- `1 <= nums.length <= 5 * 10000`
+- `-5 * 104 <= nums[i] <= 5 * 10000`
+A-3-
+def sortArray(nums):
+    def merge(left, right):
+        merged = []
+        i = j = 0
+
+        while i < len(left) and j < len(right):
+            if left[i] <= right[j]:
+                merged.append(left[i])
+                i += 1
+            else:
+                merged.append(right[j])
+                j += 1
+
+        while i < len(left):
+            merged.append(left[i])
+            i += 1
+
+        while j < len(right):
+            merged.append(right[j])
+            j += 1
+
+        return merged
+
+    if len(nums) <= 1:
+        return nums
+
+    mid = len(nums) // 2
+    left = sortArray(nums[:mid])
+    right = sortArray(nums[mid:])
+
+    return merge(left, right)
+
+
+
+
+
+
+
+Q-4-**Move all zeroes to end of array**
+Given an array of random numbers, Push all the zero’s of a given array to the end of the array. For example, if the given arrays is 
+{1, 9, 8, 4, 0, 0, 2, 7, 0, 6, 0}, it should be changed to {1, 9, 8, 4, 2, 7, 6, 0, 0, 0, 0}. The order of all other elements should 
+be same. Expected time complexity is O(n) and extra space is O(1).
+A-4-
+def moveZeroes(nums):
+    left = right = 0
+
+    while right < len(nums):
+        if nums[right] != 0:
+            nums[left], nums[right] = nums[right], nums[left]
+            left += 1
+        right += 1
+
+    for i in range(left, len(nums)):
+        nums[i] = 0
+
+    return nums
+
+
+
+
+
+
+
+Q-5-**Rearrange array in alternating positive & negative items with O(1) extra space**
+Given an **array of positive** and **negative numbers**, arrange them in an **alternate** fashion such that every positive number is 
+followed by a negative and vice-versa maintaining the **order of appearance**. The number of positive and negative numbers need not be
+equal. If there are more positive numbers they appear at the end of the array. If there are more negative numbers, they too appear at 
+the end of the array.
+A-5-
+def rearrangeArray(nums):
+    n = len(nums)
+    pos = 0
+    neg = 0
+
+    while pos < n and neg < n:
+        while pos < n and nums[pos] >= 0:
+            pos += 1
+
+        while neg < n and nums[neg] < 0:
+            neg += 1
+
+        if pos < n and neg < n:
+            nums[pos], nums[neg] = nums[neg], nums[pos]
+            pos += 1
+            neg += 2
+
+    # Move remaining positive elements to the end
+    while pos < n:
+        nums[pos], nums[neg] = nums[neg], nums[pos]
+        pos += 1
+        neg += 1
+
+    # Move remaining negative elements to the end
+    while neg < n:
+        nums[neg], nums[neg + 1] = nums[neg + 1], nums[neg]
+        neg += 2
+
+    return nums
+
+
+
+
+
+
+Q-6-**Merge two sorted arrays**
+Given two sorted arrays, the task is to merge them in a sorted manner.
+A-6-
+def mergeSortedArrays(arr1, arr2):
+    merged = []
+    i = j = 0
+
+    while i < len(arr1) and j < len(arr2):
+        if arr1[i] <= arr2[j]:
+            merged.append(arr1[i])
+            i += 1
+        else:
+            merged.append(arr2[j])
+            j += 1
+
+    while i < len(arr1):
+        merged.append(arr1[i])
+        i += 1
+
+    while j < len(arr2):
+        merged.append(arr2[j])
+        j += 1
+
+    return merged
+
+
+
+
+
+
+
+
+
+Q-7-**Intersection of Two Arrays**
+Given two integer arrays `nums1` and `nums2`, return *an array of their intersection*. Each element in the result must be **unique** 
+and you may return the result in **any order**.
+**Constraints:**
+- `1 <= nums1.length, nums2.length <= 1000`
+- `0 <= nums1[i], nums2[i] <= 1000`
+A-7-
+def intersection(nums1, nums2):
+    set1 = set(nums1)
+    set2 = set(nums2)
+    result = set()
+
+    for num in set2:
+        if num in set1:
+            result.add(num)
+
+    return list(result)
+
+
+
+
+
+
+
+
+Q-8-**Intersection of Two Arrays II**
+Given two integer arrays `nums1` and `nums2`, return *an array of their intersection*. Each element in the result must appear as many
+times as it shows in both arrays and you may return the result in **any order**.
+**Constraints:**
+- `1 <= nums1.length, nums2.length <= 1000`
+- `0 <= nums1[i], nums2[i] <= 1000`
+A-8-
+def intersect(nums1, nums2):
+    frequency = {}
+    intersection = []
+
+    # Count the frequency of elements in nums1
+    for num in nums1:
+        frequency[num] = frequency.get(num, 0) + 1
+
+    # Find the common elements while considering frequencies
+    for num in nums2:
+        if num in frequency and frequency[num] > 0:
+            intersection.append(num)
+            frequency[num] -= 1
+
+    return intersection
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
